@@ -11,22 +11,12 @@ import { fontSizes, colors } from 'styles/theme';
 import { IMovie } from 'utils/types/movieType';
 import { useRecoilState } from 'recoil';
 import { movieState } from 'state/movie';
-import { useState } from 'react';
-import { useEffect } from 'react';
 
 const Search = (props: {
   data: IMovie[] | undefined;
   setIsModal: (isModal: boolean) => void;
 }) => {
   const [movie, setMovie] = useRecoilState(movieState);
-  const [selectedMovie, setSelectedMovie] = useState({});
-  const [isSelect, setIsSelect] = useState(false);
-
-  // useEffect(() => {
-  //   if (selectedMovie) {
-  //     setMovie([...movie, selectedMovie]);
-  //   }
-  // }, [isSelect]);
 
   return (
     <Container>
