@@ -29,7 +29,6 @@ const Search = (props: {
       {props.data ? (
         <ResultBox>
           {props.data.map((m: IMovie) => {
-            console.log(m);
             return (
               <div>{m.title}</div>
               // <div

@@ -27,19 +27,16 @@ function App() {
         if (keyword === '') {
           return false;
         } else {
-          const response = await axios.get(
-            'https://openapi.naver.com/v1/search/movie.json',
-            {
-              params: {
-                query: keyword,
-                display: 5,
-              },
-              headers: {
-                'X-Naver-Client-Id': ID_KEY,
-                'X-Naver-Client-Secret': SECRET_KEY,
-              },
-            }
-          );
+          const response = await axios.get('/v1/search/movie.json', {
+            params: {
+              query: keyword,
+              display: 5,
+            },
+            headers: {
+              'X-Naver-Client-Id': ID_KEY,
+              'X-Naver-Client-Secret': SECRET_KEY,
+            },
+          });
           console.log(response.data);
           setData(response.data.items);
           setParam({ query: keyword, display: 5 });
