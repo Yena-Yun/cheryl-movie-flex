@@ -29,25 +29,26 @@ const Search = (props: {
       {props.data ? (
         <ResultBox>
           {props.data.map((m: IMovie) => {
+            const id = m.link.slice(m.link.indexOf('='));
             return (
-              <div>{m.title}</div>
-              // <div
-              //   key={m.imdbID}
-              //   style={{ cursor: 'pointer' }}
-              //   onClick={() => {
-              //     setMovie([...movie, m]);
-              //     props.setIsModal(true);
-              //   }}
-              // >
-              //   <Flexbox key={m.imdbID} margin='0.5rem'>
-              //     <ImageBox src={m.Poster} alt='movie poster' width={100} />
-              //     <FlexColumn margin='0.2rem 0 0 0.7rem'>
-              //       <TextBox size={fontSizes.subtitle}>{m.Title}</TextBox>
-              //       <TextBox size={fontSizes.paragraph}>{m.Year}</TextBox>
-              //       <TextBox size={fontSizes.paragraph}>{m.Type}</TextBox>
-              //     </FlexColumn>
-              //   </Flexbox>
-              // </div>
+              <div
+                key={id}
+                style={{ cursor: 'pointer' }}
+                onClick={() => {
+                  setMovie([...movie, m]);
+                  props.setIsModal(true);
+                }}
+              >
+                <Flexbox key={id} margin='0.5rem'>
+                  <ImageBox src={m.image} alt='movie poster' width={100} />
+                  <FlexColumn margin='0.2rem 0 0 0.7rem'>
+                    <TextBox size={fontSizes.subtitle}>{m.title}</TextBox>
+                    <TextBox size={fontSizes.paragraph}>{m.pubDate}</TextBox>
+                    <TextBox size={fontSizes.paragraph}>{m.actor}</TextBox>
+                    <TextBox size={fontSizes.paragraph}>{m.userRating}</TextBox>
+                  </FlexColumn>
+                </Flexbox>
+              </div>
             );
           })}
         </ResultBox>
