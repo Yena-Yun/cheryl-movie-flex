@@ -11,24 +11,93 @@ import { fontSizes, colors } from 'styles/theme';
 import { IMovie } from 'utils/types/movieType';
 import { useRecoilState } from 'recoil';
 import { movieState } from 'state/movie';
+import { useEffect, useState } from 'react';
+import { paramState } from 'state/apiParam';
+import axios from 'axios';
 
-const Search = (props: {
-  data: IMovie[] | undefined;
-  setIsModal: (isModal: boolean) => void;
-}) => {
+// data: IMovie[] | undefined;
+
+interface IMatchData {
+  target: string;
+  keyword: string;
+}
+
+interface IMatchParam {
+  title: string;
+  keyword: string;
+}
+
+const Search = (props: { setIsModal: (isModal: boolean) => void }) => {
+  const [data, setData] = useState<IMovie[]>();
+  const [input, setInput] = useState('');
+  const [keyword, setKeyword] = useState('아이언맨');
+  const [result, setResult] = useState<IMovie[] | undefined>();
   const [movie, setMovie] = useRecoilState(movieState);
+  const [param, setParam] = useRecoilState(paramState);
+
+  useEffect(() => {
+    (async () => {
+      const ID_KEY = 'b8VDOmg9HDiCc7_2DX2i';
+      const SECRET_KEY = '6EKrXK5KFa';
+
+      try {
+        if (keyword === '') {
+          return false;
+        } else {
+          const response = await axios.get('/v1/search/movie.json', {
+            params: {
+              query: keyword,
+              display: 5,
+            },
+            headers: {
+              'X-Naver-Client-Id': ID_KEY,
+              'X-Naver-Client-Secret': SECRET_KEY,
+            },
+          });
+          console.log(response.data);
+          setData(response.data.items);
+          setParam({ query: keyword, display: 5 });
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    })();
+  }, []);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    setInput(value);
+  };
+
+  const handleSearch = () => {
+    if (keyword === '') return;
+    const resultData = data?.filter((item) => item.title.includes(keyword));
+    setResult(resultData);
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+      setInput('');
+    }
+  };
 
   return (
     <Container>
       <SearchForm action='' method='POST'>
-        <SearchInput type='text' />
-        <SearchBtn type='submit'>
+        <SearchInput
+          type='text'
+          value={input}
+          onChange={handleChange}
+          onKeyPress={handleKeyPress}
+        />
+        <SearchBtn type='submit' onClick={handleSearch}>
           <ImSearch size='1.2rem' />
         </SearchBtn>
       </SearchForm>
-      {props.data ? (
+      {data ? (
         <ResultBox>
-          {props.data.map((m: IMovie) => {
+          {data.map((m: IMovie) => {
             const id = m.link.slice(m.link.indexOf('=') + 1);
             return (
               <div

@@ -1,62 +1,22 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import styled from 'styled-components';
-import axios from 'axios';
 import Search from './components/Search';
 import Favorites from 'components/Favorites';
 import Tab from 'components/Tab';
 import { FlexColumn, TextBox } from 'styles/commonStyles';
 import { fontSizes, fontWeights, colors } from 'styles/theme';
-import { IMovie } from 'utils/types/movieType';
 import Modal from 'components/Modal';
-import { useRecoilState } from 'recoil';
-import { paramState } from 'state/apiParam';
 
 function App() {
-  const [data, setData] = useState<IMovie[]>();
   const [isSearch, setIsSearch] = useState(true);
   const [isModal, setIsModal] = useState(false);
-  const [keyword, setKeyword] = useState('아이언맨');
-  const [param, setParam] = useRecoilState(paramState);
-
-  useEffect(() => {
-    (async () => {
-      const ID_KEY = 'b8VDOmg9HDiCc7_2DX2i';
-      const SECRET_KEY = '6EKrXK5KFa';
-
-      try {
-        if (keyword === '') {
-          return false;
-        } else {
-          const response = await axios.get('/v1/search/movie.json', {
-            params: {
-              query: keyword,
-              display: 5,
-            },
-            headers: {
-              'X-Naver-Client-Id': ID_KEY,
-              'X-Naver-Client-Secret': SECRET_KEY,
-            },
-          });
-          console.log(response.data);
-          setData(response.data.items);
-          setParam({ query: keyword, display: 5 });
-        }
-      } catch (err) {
-        console.log(err);
-      }
-    })();
-  }, []);
 
   return (
     <Container>
       <TextBox size={fontSizes.title} weight={fontWeights.title} center>
         CheryFlex
       </TextBox>
-      {isSearch ? (
-        <Search data={data} setIsModal={setIsModal} />
-      ) : (
-        <Favorites />
-      )}
+      {isSearch ? <Search setIsModal={setIsModal} /> : <Favorites />}
       <Tab isSearch={isSearch} setIsSearch={setIsSearch} />
       {isModal && <Modal isModal={isModal} setIsModal={setIsModal} />}
     </Container>
