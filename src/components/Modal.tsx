@@ -1,7 +1,7 @@
 import { useRecoilState } from 'recoil';
 import { movieState } from 'state/movie';
 import styled from 'styled-components';
-import { ButtonFlexCenter, Flexbox, FlexCenter } from 'styles/commonStyles';
+import { ButtonFlexCenter, FlexCenter } from 'styles/commonStyles';
 
 const Modal = (props: {
   isModal: boolean;
@@ -12,23 +12,17 @@ const Modal = (props: {
   return (
     <Overlay onClick={() => props.setIsModal(false)}>
       <Container onClick={(e) => e.stopPropagation()}>
-        <ButtonFlexCenter
+        <ModalBtn onClick={() => props.setIsModal(false)}>즐겨찾기</ModalBtn>
+        <ModalBtn
           onClick={() => {
-            props.setIsModal(!props.isModal);
-            console.log(movie);
-          }}
-        >
-          즐겨찾기
-        </ButtonFlexCenter>
-        <ButtonFlexCenter
-          onClick={() => {
-            setMovie([...movie.slice(0, movie.length - 1)]);
-            console.log(movie);
-            props.setIsModal(!props.isModal);
+            if (movie.length > 0) {
+              setMovie([...movie.slice(0, movie.length - 1)]);
+            }
+            props.setIsModal(false);
           }}
         >
           취소
-        </ButtonFlexCenter>
+        </ModalBtn>
       </Container>
     </Overlay>
   );
@@ -44,11 +38,21 @@ const Overlay = styled(FlexCenter)`
   background-color: rgba(0, 0, 0, 0.5);
 `;
 
-const Container = styled(Flexbox)`
+const Container = styled(FlexCenter)`
   width: 30rem;
   height: 10rem;
   background-color: #fff;
   border-radius: 1.5rem;
+`;
+
+const ModalBtn = styled(ButtonFlexCenter)`
+  border: 1px solid tomato;
+  border-radius: 4px;
+  height: 30px;
+
+  &:first-child {
+    margin-right: 12px;
+  }
 `;
 
 export default Modal;

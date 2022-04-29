@@ -21,20 +21,21 @@ const Favorites = () => {
           내 즐겨찾기
         </TextBox>
       </div>
-      {movie.length > 1 ? (
+      {movie.length > 0 ? (
         <ResultBox>
           {movie.map((m: IMovie) => {
+            const id = m.link.slice(m.link.indexOf('=') + 1);
             console.log(m);
             return (
-              <div></div>
-              // <Flexbox key={m.imdbID} margin='0.5rem'>
-              //   <ImageBox src={m.Poster} alt='movie poster' width={100} />
-              //   <FlexColumn margin='0.2rem 0 0 0.7rem'>
-              //     <TextBox size={fontSizes.subtitle}>{m.Title}</TextBox>
-              //     <TextBox size={fontSizes.paragraph}>{m.Year}</TextBox>
-              //     <TextBox size={fontSizes.paragraph}>{m.Type}</TextBox>
-              //   </FlexColumn>
-              // </Flexbox>
+              <Flexbox key={id} margin='0.5rem'>
+                <ImageBox src={m.image} alt='movie poster' width={100} />
+                <FlexColumn margin='0.2rem 0 0 0.7rem'>
+                  <TextBox size={fontSizes.subtitle}>{m.title}</TextBox>
+                  <TextBox size={fontSizes.paragraph}>{m.pubDate}</TextBox>
+                  <TextBox size={fontSizes.paragraph}>{m.actor}</TextBox>
+                  <TextBox size={fontSizes.paragraph}>{m.userRating}</TextBox>
+                </FlexColumn>
+              </Flexbox>
             );
           })}
         </ResultBox>

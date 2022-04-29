@@ -11,12 +11,22 @@ import { fontSizes, colors } from 'styles/theme';
 import { IMovie } from 'utils/types/movieType';
 import { useRecoilState } from 'recoil';
 import { movieState } from 'state/movie';
+import { useState } from 'react';
+import { useEffect } from 'react';
 
 const Search = (props: {
   data: IMovie[] | undefined;
   setIsModal: (isModal: boolean) => void;
 }) => {
   const [movie, setMovie] = useRecoilState(movieState);
+  const [selectedMovie, setSelectedMovie] = useState({});
+  const [isSelect, setIsSelect] = useState(false);
+
+  // useEffect(() => {
+  //   if (selectedMovie) {
+  //     setMovie([...movie, selectedMovie]);
+  //   }
+  // }, [isSelect]);
 
   return (
     <Container>
@@ -29,13 +39,18 @@ const Search = (props: {
       {props.data ? (
         <ResultBox>
           {props.data.map((m: IMovie) => {
-            const id = m.link.slice(m.link.indexOf('='));
+            const id = m.link.slice(m.link.indexOf('=') + 1);
             return (
               <div
                 key={id}
                 style={{ cursor: 'pointer' }}
                 onClick={() => {
-                  setMovie([...movie, m]);
+                  if (movie.includes(m)) {
+                    const uniqueMovies = movie.filter((el) => el !== m);
+                    setMovie([...uniqueMovies]);
+                  } else {
+                    setMovie([...movie, m]);
+                  }
                   props.setIsModal(true);
                 }}
               >
