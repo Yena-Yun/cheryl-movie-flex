@@ -28,25 +28,29 @@ const Search = (props: {
       </SearchForm>
       {props.data ? (
         <ResultBox>
-          {props.data.map((m: IMovie) => (
-            <div
-              key={m.imdbID}
-              style={{ cursor: 'pointer' }}
-              onClick={() => {
-                setMovie([...movie, m]);
-                props.setIsModal(true);
-              }}
-            >
-              <Flexbox key={m.imdbID} margin='0.5rem'>
-                <ImageBox src={m.Poster} alt='movie poster' width={100} />
-                <FlexColumn margin='0.2rem 0 0 0.7rem'>
-                  <TextBox size={fontSizes.subtitle}>{m.Title}</TextBox>
-                  <TextBox size={fontSizes.paragraph}>{m.Year}</TextBox>
-                  <TextBox size={fontSizes.paragraph}>{m.Type}</TextBox>
-                </FlexColumn>
-              </Flexbox>
-            </div>
-          ))}
+          {props.data.map((m: IMovie) => {
+            console.log(m);
+            return (
+              <div>{m.title}</div>
+              // <div
+              //   key={m.imdbID}
+              //   style={{ cursor: 'pointer' }}
+              //   onClick={() => {
+              //     setMovie([...movie, m]);
+              //     props.setIsModal(true);
+              //   }}
+              // >
+              //   <Flexbox key={m.imdbID} margin='0.5rem'>
+              //     <ImageBox src={m.Poster} alt='movie poster' width={100} />
+              //     <FlexColumn margin='0.2rem 0 0 0.7rem'>
+              //       <TextBox size={fontSizes.subtitle}>{m.Title}</TextBox>
+              //       <TextBox size={fontSizes.paragraph}>{m.Year}</TextBox>
+              //       <TextBox size={fontSizes.paragraph}>{m.Type}</TextBox>
+              //     </FlexColumn>
+              //   </Flexbox>
+              // </div>
+            );
+          })}
         </ResultBox>
       ) : (
         '검색 결과가 없습니다.'
