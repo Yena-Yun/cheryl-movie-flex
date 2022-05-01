@@ -11,76 +11,75 @@ import { fontSizes, colors } from 'styles/theme';
 import { IMovie } from 'utils/types/movieType';
 import { useRecoilState } from 'recoil';
 import { movieState } from 'state/movie';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { paramState } from 'state/apiParam';
 import axios from 'axios';
-
-// data: IMovie[] | undefined;
-
-interface IMatchData {
-  target: string;
-  keyword: string;
-}
-
-interface IMatchParam {
-  title: string;
-  keyword: string;
-}
 
 const Search = (props: { setIsModal: (isModal: boolean) => void }) => {
   const [data, setData] = useState<IMovie[]>();
   const [input, setInput] = useState('');
-  const [keyword, setKeyword] = useState('아이언맨');
+  const [keyword, setKeyword] = useState('');
+  const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<IMovie[] | undefined>();
   const [movie, setMovie] = useRecoilState(movieState);
   const [param, setParam] = useRecoilState(paramState);
 
   useEffect(() => {
+    if (!keyword) {
+      setKeyword('');
+      setResult([]);
+    }
+  }, [keyword]);
+
+  useEffect(() => {
     (async () => {
       const ID_KEY = 'b8VDOmg9HDiCc7_2DX2i';
       const SECRET_KEY = '6EKrXK5KFa';
+      const DISPLAY = 5;
 
       try {
-        if (keyword === '') {
-          return false;
-        } else {
-          const response = await axios.get('/v1/search/movie.json', {
-            params: {
-              query: keyword,
-              display: 5,
-            },
-            headers: {
-              'X-Naver-Client-Id': ID_KEY,
-              'X-Naver-Client-Secret': SECRET_KEY,
-            },
-          });
-          console.log(response.data);
-          setData(response.data.items);
-          setParam({ query: keyword, display: 5 });
-        }
+        setLoading(true);
+        const response = await axios.get('/api/v1/search/movie.json', {
+          params: {
+            query: keyword,
+            display: DISPLAY,
+          },
+          headers: {
+            'X-Naver-Client-Id': ID_KEY,
+            'X-Naver-Client-Secret': SECRET_KEY,
+          },
+        });
+        console.log(response.data);
+        setData(response.data.items);
+        setParam({ query: keyword, display: DISPLAY });
+        setLoading(false);
       } catch (err) {
         console.log(err);
       }
     })();
   }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
     setInput(value);
-  };
+    setKeyword(value);
+  }, []);
 
-  const handleSearch = () => {
+  const handleSearch = useCallback(() => {
     if (keyword === '') return;
     const resultData = data?.filter((item) => item.title.includes(keyword));
     setResult(resultData);
-  };
+  }, []);
 
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      handleSearch();
-      setInput('');
-    }
-  };
+  const handleKeyPress = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === 'Enter') {
+        handleSearch();
+        setInput('');
+      }
+    },
+    []
+  );
 
   return (
     <Container>
@@ -95,9 +94,9 @@ const Search = (props: { setIsModal: (isModal: boolean) => void }) => {
           <ImSearch size='1.2rem' />
         </SearchBtn>
       </SearchForm>
-      {data ? (
+      {!loading && result ? (
         <ResultBox>
-          {data.map((m: IMovie) => {
+          {result?.map((m: IMovie) => {
             const id = m.link.slice(m.link.indexOf('=') + 1);
             return (
               <div
