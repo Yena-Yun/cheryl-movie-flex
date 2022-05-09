@@ -1,1 +1,1 @@
-export const BASE_URL = `https://openapi.naver.com/v1/search/movie.json`;
+export const BASE_URL = `https://yts.mx/api/v2/list_movies.json`;

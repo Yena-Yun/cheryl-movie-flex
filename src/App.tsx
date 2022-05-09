@@ -24,11 +24,11 @@ function App() {
 }
 
 const Container = styled(FlexColumn)`
-  width: 20rem;
+  width: 24rem;
   height: 90vh;
   border: 4px solid ${colors.black};
   border-radius: 1rem;
-  margin: 1rem auto 0;
+  margin: 1.5rem auto 0;
   padding: 1rem;
   box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px,
     rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;

@@ -14,6 +14,7 @@ import { movieState } from 'state/movie';
 import { useCallback, useEffect, useState } from 'react';
 import { paramState } from 'state/apiParam';
 import axios from 'axios';
+import { BASE_URL } from 'utils/constants/api';
 
 const Search = (props: { setIsModal: (isModal: boolean) => void }) => {
   const [data, setData] = useState<IMovie[]>();
@@ -25,13 +26,6 @@ const Search = (props: { setIsModal: (isModal: boolean) => void }) => {
   const [param, setParam] = useRecoilState(paramState);
 
   useEffect(() => {
-    if (!keyword) {
-      setKeyword('');
-      setResult([]);
-    }
-  }, [keyword]);
-
-  useEffect(() => {
     (async () => {
       const ID_KEY = 'b8VDOmg9HDiCc7_2DX2i';
       const SECRET_KEY = '6EKrXK5KFa';
@@ -39,19 +33,11 @@ const Search = (props: { setIsModal: (isModal: boolean) => void }) => {
 
       try {
         setLoading(true);
-        const response = await axios.get('/api/v1/search/movie.json', {
-          params: {
-            query: keyword,
-            display: DISPLAY,
-          },
-          headers: {
-            'X-Naver-Client-Id': ID_KEY,
-            'X-Naver-Client-Secret': SECRET_KEY,
-          },
-        });
-        console.log(response.data);
-        setData(response.data.items);
-        setParam({ query: keyword, display: DISPLAY });
+        const response = await axios.get(`${BASE_URL}?sort_by=download_count`);
+        console.log(response.data.data.movies);
+        setData(response.data.data.movies);
+        // setParam({ query: keyword, display: DISPLAY });
+
         setLoading(false);
       } catch (err) {
         console.log(err);
@@ -62,45 +48,55 @@ const Search = (props: { setIsModal: (isModal: boolean) => void }) => {
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
     setInput(value);
+
     setKeyword(value);
   }, []);
 
-  const handleSearch = useCallback(() => {
-    if (keyword === '') return;
-    const resultData = data?.filter((item) => item.title.includes(keyword));
-    setResult(resultData);
-  }, []);
+  useEffect(() => {
+    console.log(keyword);
+  }, [keyword]);
 
-  const handleKeyPress = useCallback(
-    (e: React.KeyboardEvent<HTMLInputElement>) => {
-      if (e.key === 'Enter') {
-        handleSearch();
-        setInput('');
-      }
-    },
-    []
-  );
+  // const handleSearch = useCallback(() => {
+  //   console.log(keyword);
+  //   if (keyword === '') {
+  //     return;
+  //   } else {
+  //     const resultData = data?.filter((item) => item.title.includes(keyword));
+  //     console.log(resultData);
+  //     setData(resultData);
+  //   }
+  //   setInput('');
+  // }, []);
+
+  // const handleKeyPress = useCallback(
+  //   (e: React.KeyboardEvent<HTMLInputElement>) => {
+  //     if (e.key === 'Enter') {
+  //       handleSearch();
+  //     }
+  //   },
+  //   []
+  // );
 
   return (
     <Container>
-      <SearchForm action='' method='POST'>
+      <SearchForm>
         <SearchInput
           type='text'
           value={input}
           onChange={handleChange}
-          onKeyPress={handleKeyPress}
+          // onKeyPress={handleKeyPress}
         />
-        <SearchBtn type='submit' onClick={handleSearch}>
-          <ImSearch size='1.2rem' />
+        {/* <SearchBtn type='submit' onClick={handleSearch}> */}
+        <SearchBtn type='submit'>
+          <ImSearch size='1.5rem' color='#8e8e8e' />
         </SearchBtn>
       </SearchForm>
-      {!loading && result ? (
+      {!loading && data ? (
         <ResultBox>
-          {result?.map((m: IMovie) => {
-            const id = m.link.slice(m.link.indexOf('=') + 1);
+          {data?.map((m: IMovie) => {
             return (
               <div
-                key={id}
+                key={m.id}
                 style={{ cursor: 'pointer' }}
                 onClick={() => {
                   if (movie.includes(m)) {
@@ -112,13 +108,19 @@ const Search = (props: { setIsModal: (isModal: boolean) => void }) => {
                   props.setIsModal(true);
                 }}
               >
-                <Flexbox key={id} margin='0.5rem'>
-                  <ImageBox src={m.image} alt='movie poster' width={100} />
+                <Flexbox margin='1.5rem 0.5rem'>
+                  <ImageBox
+                    src={m.medium_cover_image}
+                    alt='movie poster'
+                    width={100}
+                  />
                   <FlexColumn margin='0.2rem 0 0 0.7rem'>
-                    <TextBox size={fontSizes.subtitle}>{m.title}</TextBox>
-                    <TextBox size={fontSizes.paragraph}>{m.pubDate}</TextBox>
-                    <TextBox size={fontSizes.paragraph}>{m.actor}</TextBox>
-                    <TextBox size={fontSizes.paragraph}>{m.userRating}</TextBox>
+                    <TextBox size={fontSizes.subtitle}>{m.title_long}</TextBox>
+                    <TextBox size={fontSizes.paragraph}>{m.mpa_rating}</TextBox>
+                    <TextBox size={fontSizes.paragraph}>{m.rating}</TextBox>
+                    <TextBox size={fontSizes.paragraph}>
+                      {m.runtime} min.
+                    </TextBox>
                   </FlexColumn>
                 </Flexbox>
               </div>
@@ -134,31 +136,30 @@ const Search = (props: { setIsModal: (isModal: boolean) => void }) => {
 
 const Container = styled.div`
   height: 64vh;
-  margin: 1rem 0;
+  margin: 1.5rem 0;
   border-top: 1px solid ${colors.gray};
   border-bottom: 1px solid ${colors.gray};
 `;
 
-const SearchForm = styled.form`
+const SearchForm = styled.div`
   display: flex;
-  width: 18rem;
-  margin: 1rem auto 1.2rem;
+  width: 20rem;
+  margin: 1.5rem auto 1.8rem;
   position: relative;
 `;
 
 const SearchInput = styled.input`
+  width: 100%;
   border: 2px solid ${colors.gray};
   border-radius: 0.4rem;
-  padding: 0.4rem 0.5rem;
-  width: 100%;
+  padding: 0.8rem 0.5rem;
 `;
 
 const SearchBtn = styled.button`
   display: flex;
   position: absolute;
-  top: 0.4rem;
-  right: 0.2rem;
-  width: 2rem;
+  top: 0.6rem;
+  right: 0.5rem;
 `;
 
 export default Search;

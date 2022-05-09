@@ -24,16 +24,19 @@ const Favorites = () => {
       {movie.length > 0 ? (
         <ResultBox>
           {movie.map((m: IMovie) => {
-            const id = m.link.slice(m.link.indexOf('=') + 1);
             console.log(m);
             return (
-              <Flexbox key={id} margin='0.5rem'>
-                <ImageBox src={m.image} alt='movie poster' width={100} />
+              <Flexbox key={m.id} margin='0.5rem'>
+                <ImageBox
+                  src={m.medium_cover_image}
+                  alt='movie poster'
+                  width={100}
+                />
                 <FlexColumn margin='0.2rem 0 0 0.7rem'>
-                  <TextBox size={fontSizes.subtitle}>{m.title}</TextBox>
-                  <TextBox size={fontSizes.paragraph}>{m.pubDate}</TextBox>
-                  <TextBox size={fontSizes.paragraph}>{m.actor}</TextBox>
-                  <TextBox size={fontSizes.paragraph}>{m.userRating}</TextBox>
+                  <TextBox size={fontSizes.subtitle}>{m.title_long}</TextBox>
+                  <TextBox size={fontSizes.paragraph}>{m.mpa_rating}</TextBox>
+                  <TextBox size={fontSizes.paragraph}>{m.rating}</TextBox>
+                  <TextBox size={fontSizes.paragraph}>{m.runtime} min.</TextBox>
                 </FlexColumn>
               </Flexbox>
             );

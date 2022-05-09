@@ -1,10 +1,9 @@
 export interface IMovie {
-  title: string;
-  link: string;
-  image: string;
-  subtitle: string;
-  pubDate: string;
-  director: string;
-  actor: string;
-  userRating: string;
+  id: number;
+  title_long: string;
+  medium_cover_image: string;
+  mpa_rating: string;
+  rating: string;
+  runtime: string;
+  summary: string;
 }
