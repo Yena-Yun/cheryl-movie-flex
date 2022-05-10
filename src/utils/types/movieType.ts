@@ -5,5 +5,4 @@ export interface IMovie {
   mpa_rating: string;
   rating: string;
   runtime: string;
-  summary: string;
 }

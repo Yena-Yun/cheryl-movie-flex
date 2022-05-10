@@ -11,7 +11,13 @@ import { fontSizes, colors } from 'styles/theme';
 import { IMovie } from 'utils/types/movieType';
 import { useRecoilState } from 'recoil';
 import { movieState } from 'state/movie';
-import { useCallback, useEffect, useState } from 'react';
+import React, {
+  ReactComponentElement,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { paramState } from 'state/apiParam';
 import axios from 'axios';
 import { BASE_URL } from 'utils/constants/api';
@@ -48,30 +54,43 @@ const Search = (props: { setIsModal: (isModal: boolean) => void }) => {
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
     setInput(value);
-
     setKeyword(value);
   }, []);
 
+  const handleSearch = useCallback(
+    (e: React.FormEvent<HTMLInputElement>, keyword: string) => {
+      e.preventDefault();
+      console.log(keyword);
+      const resultData = data?.filter((item) =>
+        item.title_long.includes(keyword)
+      );
+      console.log(resultData);
+      setData(resultData);
+    },
+    []
+  );
+
   useEffect(() => {
-    console.log(keyword);
+    const debounce = setTimeout((e) => {
+      handleSearch(e, keyword);
+    }, 500);
+    return () => clearTimeout(debounce);
+  }, [keyword, handleSearch]);
+
+  useEffect(() => {
+    if (!keyword) {
+      setKeyword('');
+      setResult([]);
+    }
   }, [keyword]);
 
-  // const handleSearch = useCallback(() => {
-  //   console.log(keyword);
-  //   if (keyword === '') {
-  //     return;
-  //   } else {
-  //     const resultData = data?.filter((item) => item.title.includes(keyword));
-  //     console.log(resultData);
-  //     setData(resultData);
-  //   }
-  //   setInput('');
-  // }, []);
-
   // const handleKeyPress = useCallback(
-  //   (e: React.KeyboardEvent<HTMLInputElement>) => {
+  //   (
+  //     e: React.KeyboardEvent<HTMLInputElement>,
+  //     event: React.FormEvent<HTMLInputElement>
+  //   ) => {
   //     if (e.key === 'Enter') {
-  //       handleSearch();
+  //       handleSearch(event, keyword);
   //     }
   //   },
   //   []
@@ -84,10 +103,10 @@ const Search = (props: { setIsModal: (isModal: boolean) => void }) => {
           type='text'
           value={input}
           onChange={handleChange}
-          // onKeyPress={handleKeyPress}
+          autoFocus
+          // onKeyPress={(e) => handleKeyPress}
         />
-        {/* <SearchBtn type='submit' onClick={handleSearch}> */}
-        <SearchBtn type='submit'>
+        <SearchBtn type='submit' onClick={(e) => handleSearch}>
           <ImSearch size='1.5rem' color='#8e8e8e' />
         </SearchBtn>
       </SearchForm>
@@ -141,7 +160,7 @@ const Container = styled.div`
   border-bottom: 1px solid ${colors.gray};
 `;
 
-const SearchForm = styled.div`
+const SearchForm = styled.form`
   display: flex;
   width: 20rem;
   margin: 1.5rem auto 1.8rem;
